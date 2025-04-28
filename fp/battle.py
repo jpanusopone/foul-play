@@ -85,6 +85,8 @@ class Battle(ABC):
 
         self.request_json = None
 
+        self.game_review = False
+
     def initialize_team_preview(self, user_json, opponent_pokemon, battle_type):
         self.user.initialize_first_turn_user_from_json(user_json)
         self.user.reserve.insert(0, self.user.active)

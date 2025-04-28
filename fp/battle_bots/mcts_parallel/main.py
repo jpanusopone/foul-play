@@ -102,12 +102,12 @@ class BattleBot(Battle):
             or (self.opponent.active.hp > 0 and opponent_active_num_moves == 0)
             or opponent_active_num_moves < 3
         ):
-            num_battles_multiplier = 1 if in_time_pressure else 2
+            num_battles_multiplier = 3 if in_time_pressure else 6
             return FoulPlayConfig.parallelism * num_battles_multiplier, int(
                 FoulPlayConfig.search_time_ms
             )
         else:
-            return FoulPlayConfig.parallelism, FoulPlayConfig.search_time_ms
+            return FoulPlayConfig.parallelism * 3, FoulPlayConfig.search_time_ms
 
     def find_best_move(self):
         if self.team_preview:
@@ -138,20 +138,30 @@ class BattleBot(Battle):
                 num_battles, search_time_per_battle
             )
         )
-        with ProcessPoolExecutor(max_workers=FoulPlayConfig.parallelism) as executor:
-            futures = []
-            for index, (b, chance) in enumerate(battles):
-                fut = executor.submit(
-                    get_result_from_mcts,
-                    battle_to_poke_engine_state(b),
-                    search_time_per_battle,
-                    index,
-                )
-                futures.append((fut, chance, index))
+        if self.game_review:
+            with ProcessPoolExecutor(
+                max_workers=FoulPlayConfig.parallelism
+            ) as executor:
+                futures = []
+                for index, (b, chance) in enumerate(battles):
+                    fut = executor.submit(
+                        get_result_from_mcts,
+                        battle_to_poke_engine_state(b),
+                        search_time_per_battle,
+                        index,
+                    )
+                    futures.append((fut, chance, index))
 
-        mcts_results = [
-            (fut.result(), chance, index) for (fut, chance, index) in futures
-        ]
+            mcts_results = [
+                (fut.result(), chance, index) for (fut, chance, index) in futures
+            ]
+        else:
+            mcts_results = []
+            for index, (b, chance) in enumerate(battles):
+                res = get_result_from_mcts(
+                    battle_to_poke_engine_state(b), search_time_per_battle, index
+                )
+                mcts_results.append((res, chance, index))
         choice = select_move_from_mcts_results(mcts_results)
         logger.info("Choice: {}".format(choice))
 
