@@ -1,11 +1,11 @@
 BATTLE_BOT=minimax
 WEBSOCKET_URI=wss://sim3.psim.us/showdown/websocket
-# PS_USERNAME=MyUsername
-# PS_PASSWORD=MyPassword
-BOT_MODE=SEARCH_LADDER
-POKEMON_MODE=gen7randombattle
+# PS_USERNAME=fouler_play
+# PS_PASSWORD=foulplay
+BOT_MODE=ACCEPT_CHALLENGE
+POKEMON_MODE=gen9randombattle
 RUN_COUNT=1
 
-USER_TO_CHALLENGE=SomeOtherPerson
+USER_TO_CHALLENGE=Krankier Kyogre
 TEAM_NAME=gen8/ou/clef_sand
 SAVE_REPLAY=Never
